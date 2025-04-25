@@ -214,6 +214,7 @@ public class Main extends JFrame {
         configService.reset();
         refreshMainConfig();
         baseSetting.initConfig();
+        tableSetting.reset();
     }
 
     /**
