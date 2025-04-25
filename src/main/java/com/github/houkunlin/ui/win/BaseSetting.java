@@ -3,6 +3,8 @@ package com.github.houkunlin.ui.win;
 import com.github.houkunlin.config.Developer;
 import com.github.houkunlin.config.Options;
 import com.github.houkunlin.config.Settings;
+import com.github.houkunlin.model.FileTypeModel;
+import com.github.houkunlin.model.JTableModel;
 import com.github.houkunlin.util.PluginUtils;
 import com.google.common.collect.Maps;
 import com.intellij.ide.highlighter.JavaFileType;
@@ -130,6 +132,8 @@ public class BaseSetting implements IWindows {
      * 复选：是否记住上次的模板
      */
     private JCheckBox retainLastSelectionTemplates;
+    private JTable fileTypeTable;
+    private FileTypeModel fileTypeModel;
 
     private Runnable noteReset;
 
@@ -145,6 +149,7 @@ public class BaseSetting implements IWindows {
         databaseFieldStyleType.addItem("大坨峰（UPPER_CAMEL）");
         databaseFieldStyleType.addItem("连接符（LOWER_HYPHEN）");
 
+        fileTypeModel = new FileTypeModel(fileTypeTable);
         initConfig();
         configSelectPackage();
 
