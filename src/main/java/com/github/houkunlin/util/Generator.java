@@ -103,7 +103,7 @@ public class Generator {
 
     private SaveFilePath getSaveFilePath(RootModel rootModel, File templateFile) {
         if (Variable.type == null) {
-            return new SaveFilePath(templateFile.getName(), settings.getSourcesPathAt("temp"));
+            return new SaveFilePath(templateFile.getName(), settings.getResourcesPathAt("temp"));
         }
         return SaveFilePath.create(rootModel, settings);
     }

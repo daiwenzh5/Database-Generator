@@ -4,6 +4,7 @@ import com.github.houkunlin.config.Options;
 import com.github.houkunlin.config.Settings;
 import com.github.houkunlin.vo.Variable;
 import com.github.houkunlin.vo.impl.RootModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,42 +55,23 @@ public class SaveFilePath {
     }
 
     public static SaveFilePath create(RootModel rootModel, Settings settings) {
-        SaveFilePath saveFilePath;
-        String entityName = String.valueOf(rootModel.getEntity().getName());
+        var entityName = String.valueOf(rootModel.getEntity().getName());
         if (Variable.type == null) {
-            return new SaveFilePath(entityName + ".java",
-                    settings.getSourcesPathAt("temp"));
+            return createTempSavePath(settings, entityName);
         }
-        switch (Variable.type) {
-            case "entity":
-                saveFilePath = new SaveFilePath(entityName + settings.getEntitySuffix() + ".java",
-                        settings.getJavaPathAt(settings.getEntityPackage()));
-                break;
-            case "dao":
-                saveFilePath = new SaveFilePath(entityName + settings.getDaoSuffix() + ".java",
-                        settings.getJavaPathAt(settings.getDaoPackage()));
-                break;
-            case "service":
-                saveFilePath = new SaveFilePath(entityName + settings.getServiceSuffix() + ".java",
-                        settings.getJavaPathAt(settings.getServicePackage()));
-                break;
-            case "serviceImpl":
-                saveFilePath = new SaveFilePath(entityName + settings.getServiceSuffix() + "Impl.java",
-                        settings.getJavaPathAt(settings.getServicePackage() + ".impl"));
-                break;
-            case "controller":
-                saveFilePath = new SaveFilePath(entityName + settings.getControllerSuffix() + ".java",
-                        settings.getJavaPathAt(settings.getControllerPackage()));
-                break;
-            case "xml":
-                saveFilePath = new SaveFilePath(entityName + settings.getDaoSuffix() + ".xml",
-                        settings.getSourcesPathAt(settings.getXmlPackage()));
-                break;
-            default:
-                saveFilePath = new SaveFilePath(entityName + ".java",
-                        settings.getSourcesPathAt("temp"));
-        }
-        return saveFilePath;
+        return settings.getFileTypes()
+                       .stream()
+                       .filter(item -> item.getType()
+                                           .equals(Variable.type))
+                       .map(item -> new SaveFilePath(entityName + item.getSuffix() + item.getExt(),
+                           settings.getJavaPathAt(item.getPackageName()
+                                                      .toString())))
+                       .findFirst()
+                       .orElseGet(() -> createTempSavePath(settings, entityName));
+    }
+
+    private static @NotNull SaveFilePath createTempSavePath(Settings settings, String entityName) {
+        return new SaveFilePath(entityName + ".java", settings.getResourcesPathAt("temp"));
     }
 
     private String getValue(String tempValue, String defaultValue) {

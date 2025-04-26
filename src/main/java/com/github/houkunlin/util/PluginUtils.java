@@ -19,10 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * 插件工具类
@@ -190,9 +188,6 @@ public class PluginUtils {
         if (columnTypes == null) {
             columnTypes = getTableColumnTypes();
         }
-        System.out.println(Arrays.stream(columnTypes)
-                                 .map(it -> it.getShortName())
-                                 .collect(Collectors.joining(",")));
         return columnTypes;
     }
 

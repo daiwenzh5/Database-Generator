@@ -1,6 +1,10 @@
 package com.github.houkunlin.config;
 
+import com.github.houkunlin.model.FileType;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 设置信息
@@ -21,46 +25,14 @@ public class Settings {
     /**
      * 资源文件路径
      */
-    private String sourcesPath = "src/main/resources";
+    private String resourcesPath = "src/main/resources";
     /**
-     * Entity 后缀
+     * 文件类型
      */
-    private String entitySuffix = "Entity";
-    /**
-     * Dao 后缀
-     */
-    private String daoSuffix = "Repository";
-    /**
-     * Service 后缀
-     */
-    private String serviceSuffix = "Service";
-    /**
-     * Controller 后缀
-     */
-    private String controllerSuffix = "Controller";
-    /**
-     * Entity 包名
-     */
-    private String entityPackage = "com.example.entity";
-    /**
-     * Dao 包名
-     */
-    private String daoPackage = "com.example.repository";
-    /**
-     * Service 包名
-     */
-    private String servicePackage = "com.example.service";
-    /**
-     * Controller 包名
-     */
-    private String controllerPackage = "com.example.controller";
-    /**
-     * Mapper XML 包名
-     */
-    private String xmlPackage = "mapper";
+    private List<FileType> fileTypes = new ArrayList<>();
 
-    public String getSourcesPathAt(String filename) {
-        return sourcesPath + "/" + filename;
+    public String getResourcesPathAt(String filename) {
+        return resourcesPath + "/" + filename;
     }
 
     public String getJavaPathAt(String filename) {
