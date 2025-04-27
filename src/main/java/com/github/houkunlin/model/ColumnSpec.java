@@ -1,28 +1,54 @@
 package com.github.houkunlin.model;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import javax.swing.table.TableCellEditor;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
  * 通用的列信息
  *
- * @param name     列名
- * @param type     列类型
- * @param getter   获取列数据的方法
- * @param setter   设置列数据的方法
- * @param editable 是否可编辑
  * @author daiwenzh5
  * @since 1.0
  */
-public record ColumnSpec<T, V>(
-    String name,
-    Class<V> type,
-    Function<T, V> getter,
-    BiConsumer<T, V> setter,
-    boolean editable) {
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ColumnSpec<T, V> {
+    private final String name;
+    private final Class<V> type;
+    private final Function<T, V> getter;
+    private final BiConsumer<T, V> setter;
+    private boolean editable;
+    private TableCellEditor cellEditor;
+    private String placeholder;
+    private int widthWeight;
 
-    public ColumnSpec(String name, Class<V> type, Function<T, V> getter, BiConsumer<T, V> setter) {
-        this(name, type, getter, setter, true);
+
+    public static <T, V> ColumnSpec<T, V> of(String name, Class<V> type, Function<T, V> getter, BiConsumer<T, V> setter) {
+        return new ColumnSpec<T, V>(name, type, getter, setter, true, null, null, 0);
+    }
+
+    public ColumnSpec<T, V> withEditable(boolean editable) {
+        this.editable = editable;
+        return this;
+    }
+
+    public ColumnSpec<T, V> withCellEditor(TableCellEditor cellEditor) {
+        this.cellEditor = cellEditor;
+        return this;
+    }
+
+    public ColumnSpec<T, V> withPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
+        return this;
+    }
+
+    public ColumnSpec<T, V> withWidthWeight(int widthWeight) {
+        this.widthWeight = widthWeight;
+        return this;
     }
 
 }

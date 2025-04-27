@@ -1,16 +1,15 @@
-package com.github.houkunlin.ui.win;
+package com.github.houkunlin.ui.win.table;
 
+import com.github.houkunlin.config.Settings;
 import com.github.houkunlin.model.ColumnSpec;
 import com.github.houkunlin.model.FileType;
 import com.github.houkunlin.model.GenericTableModel;
-import com.github.houkunlin.model.PackageName;
 import com.github.houkunlin.util.PluginUtils;
 import com.intellij.openapi.actionSystem.ActionToolbarPosition;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBFont;
 import com.intellij.util.ui.components.JBComponent;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -29,17 +28,19 @@ public class FileTypeTable implements JBComponent<FileTypeTable> {
 
     private final GenericTableModel<FileType> tableModel;
 
-    public FileTypeTable(List<FileType> data) {
+    private final Settings settings;
+
+    public FileTypeTable(Settings settings) {
+        this.settings = settings;
         var table = new JBTable();
-        this.tableModel = createFileTypeTableModel(data, table);
-        new PackageNameTableCellEditor().bindTable(table);
+        this.tableModel = createFileTypeTableModel(settings.getFileTypes(), table);
         this.container = createPanel(table);
     }
 
     private @NotNull JPanel createPanel(JBTable table) {
         return ToolbarDecorator.createDecorator(table)
                                .setToolbarPosition(ActionToolbarPosition.TOP)
-                               .setAddAction(btn -> tableModel.addRows(FileType.of("", "", "", ".java", true)))
+                               .setAddAction(btn -> tableModel.addRows(FileType.of("", "", "", ".java", settings.getJavaPath(), true)))
                                .setRemoveAction(btn -> {
                                    if (table.getSelectedRows().length == 0) {
                                        return;
@@ -51,12 +52,22 @@ public class FileTypeTable implements JBComponent<FileTypeTable> {
 
 
     private @NotNull GenericTableModel<FileType> createFileTypeTableModel(List<FileType> list, JBTable table) {
+        var editorTableCellEditor = new EditorTableCellEditor();
+        var extTableCellEditor = new ComboBoxTableCellEditor<>(".java", ".kt", ".xml");
+        var pathTableCellEditor = new ComboBoxTableCellEditor<>(settings.getJavaPath(), settings.getResourcesPath(), true);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
         return new GenericTableModel<>(list)
-            .addColumn(new ColumnSpec<>("类型", String.class, FileType::getType, FileType::setType))
-            .addColumn(new ColumnSpec<>("后缀", String.class, FileType::getSuffix, FileType::setSuffix))
-            .addColumn(new ColumnSpec<>("包名", PackageName.class, FileType::getPackageName, FileType::setPackageName))
-            .addColumn(new ColumnSpec<>("拓展名", String.class, FileType::getExt, FileType::setExt))
-            .addColumn(new ColumnSpec<>("允许覆盖", Boolean.class, FileType::isOverride, FileType::setOverride))
+            .addColumn(ColumnSpec.of("类型", String.class, FileType::getType, FileType::setType))
+            .addColumn(ColumnSpec.of("后缀", String.class, FileType::getSuffix, FileType::setSuffix))
+            .addColumn(ColumnSpec.of("包名", String.class, FileType::getPackageName, FileType::setPackageName)
+                                 .withCellEditor(editorTableCellEditor))
+            .addColumn(ColumnSpec.of("拓展名", String.class, FileType::getExt, FileType::setExt)
+                                 .withCellEditor(extTableCellEditor))
+            .addColumn(ColumnSpec.of("存储路径", String.class, FileType::getPath, FileType::setPath)
+                                 .withCellEditor(pathTableCellEditor)
+                                 .withPlaceholder("默认为存储路径")
+                                 .withWidthWeight(2))
+            .addColumn(ColumnSpec.of("允许覆盖", boolean.class, FileType::isOverride, FileType::setOverride))
             .bindTable(table);
     }
 

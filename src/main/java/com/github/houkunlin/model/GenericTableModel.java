@@ -1,5 +1,6 @@
 package com.github.houkunlin.model;
 
+import com.github.houkunlin.ui.win.table.PlaceholderTableCellRenderer;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
+
+import static java.lang.Math.max;
 
 /**
  * 通用的表格模型
@@ -77,6 +80,28 @@ public class GenericTableModel<T> extends AbstractTableModel {
      */
     public final GenericTableModel<T> bindTable(JTable table) {
         table.setModel(this);
+        PlaceholderTableCellRenderer placeholderTableCellRenderer = null;
+        var modifyWidth = columns.stream()
+                                 .map(ColumnSpec::getWidthWeight)
+                                 .anyMatch(widthWeight -> widthWeight > 1);
+        for (int i = 0; i < columns.size(); i++) {
+            var columnSpec = columns.get(i);
+            var tableColumn = table.getColumnModel()
+                                   .getColumn(i);
+            if (columnSpec.getCellEditor() != null) {
+                tableColumn.setCellEditor(columnSpec.getCellEditor());
+            }
+            if (columnSpec.getPlaceholder() != null && !columnSpec.getPlaceholder()
+                                                                  .isBlank()) {
+                if (placeholderTableCellRenderer == null) {
+                    placeholderTableCellRenderer = new PlaceholderTableCellRenderer();
+                }
+                tableColumn.setCellRenderer(placeholderTableCellRenderer.setColumn(i, columnSpec.getPlaceholder()));
+            }
+            if (modifyWidth) {
+                tableColumn.setPreferredWidth(max(columnSpec.getWidthWeight(), 1));
+            }
+        }
         return this;
     }
 
@@ -94,7 +119,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
     public final Object getValueAt(int row, int col) {
         T item = data.get(row);
         return columns.get(col)
-                      .getter()
+                      .getGetter()
                       .apply(item);
     }
 
@@ -104,26 +129,26 @@ public class GenericTableModel<T> extends AbstractTableModel {
         var item = data.get(row);
         //noinspection rawtypes
         final BiConsumer setter = columns.get(col)
-                                         .setter();
+                                         .getSetter();
         setter.accept(item, value);
     }
 
     @Override
     public final String getColumnName(int column) {
         return columns.get(column)
-                      .name();
+                      .getName();
     }
 
     @Override
     public final Class<?> getColumnClass(int columnIndex) {
         return columns.get(columnIndex)
-                      .type();
+                      .getType();
     }
 
     @Override
     public boolean isCellEditable(int row, int column) {
         return columns.get(column)
-                      .editable();
+                      .isEditable();
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.github.houkunlin.config;
 
 import com.github.houkunlin.util.PluginUtils;
+import com.google.gson.Gson;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -34,9 +35,11 @@ public class ConfigService implements PersistentStateComponent<ConfigService> {
 
     public ConfigService() {
         ConfigVo configVo = PluginUtils.loadConfig();
+        System.out.println("config vo: "  + new Gson().toJson(configVo));
         developer = configVo.getDeveloper();
         options = configVo.getOptions();
         settings = configVo.getSettings();
+        System.out.println("settings: "  + new Gson().toJson(settings));
         assert developer != null;
         assert options != null;
         assert settings != null;

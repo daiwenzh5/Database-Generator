@@ -1,6 +1,5 @@
-package com.github.houkunlin.ui.win;
+package com.github.houkunlin.ui.win.table;
 
-import com.github.houkunlin.model.PackageName;
 import com.github.houkunlin.util.PluginUtils;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.editor.Document;
@@ -18,12 +17,12 @@ import java.awt.event.FocusListener;
 import java.util.Objects;
 
 /**
- * 支持自动不全包名的表格编辑器
+ * 支持自动完成包名的表格编辑器
  *
  * @author daiwenzh5
  * @since 1.0
  */
-public class PackageNameTableCellEditor extends AbstractTableCellEditor {
+public class EditorTableCellEditor extends AbstractTableCellEditor {
 
     private final EditorTextField editorTextField;
 
@@ -32,7 +31,7 @@ public class PackageNameTableCellEditor extends AbstractTableCellEditor {
      */
     private String cellValue;
 
-    public PackageNameTableCellEditor() {
+    public EditorTableCellEditor() {
         this.editorTextField = createEditorTextField(PluginUtils.getProject());
         // 当获取到焦点时，尝试将输入框的值设置为单元格值
         this.editorTextField.addFocusListener(new FocusListener() {
@@ -58,12 +57,12 @@ public class PackageNameTableCellEditor extends AbstractTableCellEditor {
      * @param table 表格
      */
     public void bindTable(JTable table) {
-        table.setDefaultEditor(PackageName.class, this);
+        table.setDefaultEditor(String.class, this);
     }
 
     @Override
     public Object getCellEditorValue() {
-        return new PackageName(editorTextField.getText());
+        return editorTextField.getText();
     }
 
     @Override

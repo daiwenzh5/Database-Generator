@@ -1,9 +1,9 @@
 package com.github.houkunlin.model;
 
-import com.github.houkunlin.config.Options;
 import com.github.houkunlin.config.Settings;
 import com.github.houkunlin.vo.Variable;
 import com.github.houkunlin.vo.impl.RootModel;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -39,12 +39,16 @@ public class SaveFilePath {
      */
     private String toString;
 
-    public SaveFilePath(String defaultFilename, String defaultFilepath) {
+    @Getter
+    private final boolean override;
+
+    public SaveFilePath(String defaultFilename, String defaultFilepath, boolean override) {
         String name = getValue(Variable.filename, defaultFilename);
         String path = getValue(Variable.filepath, defaultFilepath);
         type = Variable.type;
         toString = (path.replace(".", "/") + "/" + name);
         toString = toString.replace("\\", "/").replaceAll("/+", "/");
+        this.override = override;
         Variable.resetVariables();
     }
 
@@ -57,7 +61,7 @@ public class SaveFilePath {
     public static SaveFilePath create(RootModel rootModel, Settings settings) {
         var entityName = String.valueOf(rootModel.getEntity().getName());
         if (Variable.type == null) {
-            return createTempSavePath(settings, entityName);
+            return createTemp(entityName, settings);
         }
         return settings.getFileTypes()
                        .stream()
@@ -65,13 +69,9 @@ public class SaveFilePath {
                                            .equals(Variable.type))
                        .map(item -> new SaveFilePath(entityName + item.getSuffix() + item.getExt(),
                            settings.getJavaPathAt(item.getPackageName()
-                                                      .toString())))
+                                                      .toString()), item.isOverride()))
                        .findFirst()
-                       .orElseGet(() -> createTempSavePath(settings, entityName));
-    }
-
-    private static @NotNull SaveFilePath createTempSavePath(Settings settings, String entityName) {
-        return new SaveFilePath(entityName + ".java", settings.getResourcesPathAt("temp"));
+                       .orElseGet(() -> createTemp(entityName, settings));
     }
 
     private String getValue(String tempValue, String defaultValue) {
@@ -82,65 +82,12 @@ public class SaveFilePath {
         }
     }
 
-    /**
-     * 判断是否是某种类型的文件
-     *
-     * @param type 文件类型
-     * @return 结果
-     */
-    public boolean isType(String type) {
-        if (this.type == null) {
-            return false;
-        }
-        return this.type.equals(type);
-    }
-
-    public boolean isEntity() {
-        return "entity".equals(type);
-    }
-
-    public boolean isDao() {
-        return "dao".equals(type);
-    }
-
-    public boolean isService() {
-        return "service".equals(type);
-    }
-
-    public boolean isServiceImpl() {
-        return "serviceImpl".equals(type);
-    }
-
-    public boolean isController() {
-        return "controller".equals(type);
-    }
-
-    public boolean isJava() {
-        return types.contains(type) && !isXml();
-    }
-
-    public boolean isXml() {
-        return "xml".equals(type);
-    }
-
-    public boolean isOther() {
-        return !types.contains(type);
-    }
-
-    public boolean isOverride(Options options) {
-        boolean isOverride = false;
-        if (options.isOverrideJava() && isJava()) {
-            isOverride = true;
-        } else if (options.isOverrideXml() && isXml()) {
-            isOverride = true;
-        } else if (options.isOverrideOther() && isOther()) {
-            isOverride = true;
-        }
-        return isOverride;
-    }
-
     @Override
     public String toString() {
         return toString;
+    }
+
+    public static SaveFilePath createTemp(String filename, Settings settings) {
+        return new SaveFilePath(filename, settings.getResourcesPathAt("temp"), true);
     }
 }

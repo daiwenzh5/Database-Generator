@@ -15,21 +15,14 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @FieldDefaults(level = PRIVATE)
 @NoArgsConstructor
 public class FileType {
     String type;
     String suffix;
-    PackageName packageName;
+    String packageName;
     String ext;
+    String path;
     boolean override;
-
-    public FileType(String type, String suffix, String packageName, String ext, boolean override) {
-        this(type, suffix, new PackageName(packageName), ext, override);
-    }
-
-    public static FileType of(String type, String suffix, String packageName, String ext, boolean override) {
-        return new FileType(type, suffix, packageName, ext, override);
-    }
 }

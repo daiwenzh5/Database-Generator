@@ -3,6 +3,7 @@ package com.github.houkunlin.ui.win;
 import com.github.houkunlin.config.Developer;
 import com.github.houkunlin.config.Options;
 import com.github.houkunlin.config.Settings;
+import com.github.houkunlin.ui.win.table.FileTypeTable;
 import com.google.common.collect.Maps;
 
 import javax.swing.*;
@@ -63,7 +64,6 @@ public class BaseSetting implements IWindows {
         this.options = options;
         initFileTypeTable();
         initDatabaseFieldStyle();
-
         initConfig();
 
         /* 普通输入框的输入事件监听 */
@@ -116,7 +116,7 @@ public class BaseSetting implements IWindows {
     }
 
     private void initFileTypeTable() {
-        fileTypeTablePanel.add(new FileTypeTable(settings.getFileTypes()).getComponent(), BorderLayout.CENTER);
+        fileTypeTablePanel.add(new FileTypeTable(settings).getComponent(), BorderLayout.CENTER);
     }
 
     private void initDatabaseFieldStyle() {
