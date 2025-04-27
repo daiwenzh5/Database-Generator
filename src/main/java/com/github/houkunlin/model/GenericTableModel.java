@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static java.lang.Math.max;
-
 /**
  * 通用的表格模型
  *
@@ -81,9 +79,6 @@ public class GenericTableModel<T> extends AbstractTableModel {
     public final GenericTableModel<T> bindTable(JTable table) {
         table.setModel(this);
         PlaceholderTableCellRenderer placeholderTableCellRenderer = null;
-        var modifyWidth = columns.stream()
-                                 .map(ColumnSpec::getWidthWeight)
-                                 .anyMatch(widthWeight -> widthWeight > 1);
         for (int i = 0; i < columns.size(); i++) {
             var columnSpec = columns.get(i);
             var tableColumn = table.getColumnModel()
@@ -98,8 +93,8 @@ public class GenericTableModel<T> extends AbstractTableModel {
                 }
                 tableColumn.setCellRenderer(placeholderTableCellRenderer.setColumn(i, columnSpec.getPlaceholder()));
             }
-            if (modifyWidth) {
-                tableColumn.setPreferredWidth(max(columnSpec.getWidthWeight(), 1));
+            if (columnSpec.getWidth() > 0) {
+                tableColumn.setPreferredWidth(columnSpec.getWidth());
             }
         }
         return this;

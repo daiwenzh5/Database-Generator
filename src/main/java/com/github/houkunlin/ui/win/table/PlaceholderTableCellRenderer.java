@@ -42,7 +42,8 @@ public class PlaceholderTableCellRenderer extends DefaultTableCellRenderer {
                                   .trim()
                                   .isEmpty()) {
             label.setText(placeholders.getOrDefault(column, defaultPlaceholder));
-            label.setForeground(UIManager.getColor("TextField.inactiveForeground"));
+//            label.setForeground(UIManager.getColor("TextField.inactiveForeground"));
+            label.setForeground(UIManager.getColor("Component.infoForeground"));
         } else {
             label.setText(value.toString());
             label.setForeground(UIManager.getColor("TextField.foreground"));

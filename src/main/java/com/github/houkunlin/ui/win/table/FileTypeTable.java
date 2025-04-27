@@ -60,14 +60,17 @@ public class FileTypeTable implements JBComponent<FileTypeTable> {
             .addColumn(ColumnSpec.of("类型", String.class, FileType::getType, FileType::setType))
             .addColumn(ColumnSpec.of("后缀", String.class, FileType::getSuffix, FileType::setSuffix))
             .addColumn(ColumnSpec.of("包名", String.class, FileType::getPackageName, FileType::setPackageName)
+                                 .withWidth(120)
                                  .withCellEditor(editorTableCellEditor))
             .addColumn(ColumnSpec.of("拓展名", String.class, FileType::getExt, FileType::setExt)
-                                 .withCellEditor(extTableCellEditor))
+                                 .withCellEditor(extTableCellEditor)
+                                 .withWidth(50))
             .addColumn(ColumnSpec.of("存储路径", String.class, FileType::getPath, FileType::setPath)
                                  .withCellEditor(pathTableCellEditor)
                                  .withPlaceholder("默认为存储路径")
-                                 .withWidthWeight(2))
-            .addColumn(ColumnSpec.of("允许覆盖", boolean.class, FileType::isOverride, FileType::setOverride))
+                                 .withWidth(200))
+            .addColumn(ColumnSpec.of("允许覆盖", Boolean.class, FileType::isOverride, FileType::setOverride)
+                                 .withWidth(30))
             .bindTable(table);
     }
 

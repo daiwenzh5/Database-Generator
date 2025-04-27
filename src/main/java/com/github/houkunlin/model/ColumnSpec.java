@@ -24,11 +24,11 @@ public class ColumnSpec<T, V> {
     private boolean editable;
     private TableCellEditor cellEditor;
     private String placeholder;
-    private int widthWeight;
+    private int width;
 
 
     public static <T, V> ColumnSpec<T, V> of(String name, Class<V> type, Function<T, V> getter, BiConsumer<T, V> setter) {
-        return new ColumnSpec<T, V>(name, type, getter, setter, true, null, null, 0);
+        return new ColumnSpec<>(name, type, getter, setter, true, null, null, 0);
     }
 
     public ColumnSpec<T, V> withEditable(boolean editable) {
@@ -46,8 +46,8 @@ public class ColumnSpec<T, V> {
         return this;
     }
 
-    public ColumnSpec<T, V> withWidthWeight(int widthWeight) {
-        this.widthWeight = widthWeight;
+    public ColumnSpec<T, V> withWidth(int width) {
+        this.width = width;
         return this;
     }
 
