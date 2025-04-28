@@ -9,7 +9,7 @@ import javax.swing.*;
  * 单元格下拉输入框
  *
  * @author daiwenzh5
- * @since 1.0
+ * @since 2.8.4
  */
 public class ComboBoxTableCellEditor<T> extends DefaultCellEditor {
 
