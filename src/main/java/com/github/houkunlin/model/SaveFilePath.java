@@ -42,9 +42,9 @@ public class SaveFilePath {
     @Getter
     private final boolean override;
 
-    public SaveFilePath(String defaultFilename, String defaultFilepath, boolean override) {
-        String name = getValue(Variable.filename, defaultFilename);
-        String path = getValue(Variable.filepath, defaultFilepath);
+    public SaveFilePath(String filename, String filepath, boolean override) {
+        String name = getValue(Variable.filename, filename);
+        String path = getValue(Variable.filepath, filepath);
         type = Variable.type;
         toString = (path.replace(".", "/") + "/" + name);
         toString = toString.replace("\\", "/").replaceAll("/+", "/");
@@ -67,11 +67,15 @@ public class SaveFilePath {
                        .stream()
                        .filter(item -> item.getType()
                                            .equals(Variable.type))
-                       .map(item -> new SaveFilePath(entityName + item.getSuffix() + item.getExt(),
-                           settings.getJavaPathAt(item.getPackageName()
-                                                      .toString()), item.isOverride()))
+                       .map(item -> createSaveFilePath(settings, entityName, item))
                        .findFirst()
                        .orElseGet(() -> createTemp(entityName, settings));
+    }
+
+    private static @NotNull SaveFilePath createSaveFilePath(Settings settings, String entityName, FileType item) {
+        var filename = entityName + item.getSuffix() + item.getExt();
+        var relativePath = settings.getPathAt(item.getPath(), item.getPackageName());
+        return new SaveFilePath(filename, relativePath, item.isOverride());
     }
 
     private String getValue(String tempValue, String defaultValue) {

@@ -15,36 +15,61 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
+ * yaml工具
  * @author daiwenzh5
- * @since 1.0
+ * @since 2.8.4
  */
 @UtilityClass
 public class YamlUtils {
 
     private final static Map<String, Yaml> cache = new ConcurrentHashMap<>();
 
+    /**
+     * 从输入流中读取yaml文件，并转换为指定对象
+     *
+     * @param input 输入流
+     * @param clazz 类
+     * @param <T>   对象类型
+     * @return 对象
+     */
     public <T> Optional<T> load(InputStream input, Class<T> clazz) {
         return load(clazz, yaml -> yaml.loadAs(input, clazz));
     }
 
+    /**
+     * 从阅读字符流中读取yaml文件，并转换为指定对象
+     *
+     * @param input 阅读字符流
+     * @param clazz 类
+     * @param <T>   对象类型
+     * @return 对象
+     */
     public <T> Optional<T> load(Reader input, Class<T> clazz) {
         return load(clazz, yaml -> yaml.loadAs(input, clazz));
     }
 
+    /**
+     * 从字符串中读取yaml文件，并转换为指定对象
+     *
+     * @param input 输入字符串
+     * @param clazz 类
+     * @param <T>   对象类型
+     * @return 对象
+     */
     public <T> Optional<T> load(String input, Class<T> clazz) {
         return load(clazz, yaml -> yaml.loadAs(input, clazz));
     }
 
     private <T> Optional<T> load(Class<T> clazz, Function<Yaml, T> loader) {
-        var yaml = cache.computeIfAbsent(clazz.getName(), k -> buildYamlInstance(clazz));
         try {
+            var yaml = cache.computeIfAbsent(clazz.getName(), k -> buildYamlInstance(clazz));
             return Optional.ofNullable(loader.apply(yaml));
         } catch (Exception e) {
             return Optional.empty();
         }
     }
 
-    public Yaml buildYamlInstance(Class<?> clazz) {
+    private Yaml buildYamlInstance(Class<?> clazz) {
         var constructor = new Constructor(clazz, new LoaderOptions());
         constructor.setPropertyUtils(new PropertyUtils() {
             @Override
@@ -72,10 +97,5 @@ public class YamlUtils {
             }
         }
         return input;
-    }
-
-    @FunctionalInterface
-    interface LoadFunction<In, T> {
-        T apply(Yaml yaml, In input, Class<T> tClass);
     }
 }

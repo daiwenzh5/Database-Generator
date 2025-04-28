@@ -38,4 +38,17 @@ public class Settings {
     public String getJavaPathAt(String filename) {
         return javaPath + "/" + filename;
     }
+
+    /**
+     * 获取文件路径
+     *
+     * @param path_    路径
+     * @param filename 文件名
+     * @return 文件路径
+     * @since 2.8.4
+     */
+    public String getPathAt(String path_, String filename) {
+        var path = (path_ == null || path_.isBlank()) ? javaPath : path_;
+        return path + "/" + filename;
+    }
 }
