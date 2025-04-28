@@ -54,7 +54,7 @@ public class FileTypeTable implements JBComponent<FileTypeTable> {
     private @NotNull GenericTableModel<FileType> createFileTypeTableModel(List<FileType> list, JBTable table) {
         var editorTableCellEditor = new EditorTableCellEditor();
         var extTableCellEditor = new ComboBoxTableCellEditor<>(".java", ".kt", ".xml");
-        var pathTableCellEditor = new ComboBoxTableCellEditor<>(settings.getJavaPath(), settings.getResourcesPath(), true);
+        var pathTableCellEditor = new ComboBoxTableCellEditor<>(settings.getJavaPath(), settings.getResourcesPath());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
         return new GenericTableModel<>(list)
             .addColumn(ColumnSpec.of("类型", String.class, FileType::getType, FileType::setType))
