@@ -1,14 +1,14 @@
 package com.github.houkunlin.util;
 
 import lombok.experimental.UtilityClass;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -97,5 +97,32 @@ public class YamlUtils {
             }
         }
         return input;
+    }
+
+    public static void dump(Object data, File file) {
+        if (data == null) {
+            return;
+        }
+        try {
+            var writer = new FileWriter(file);
+            dump(data, writer);
+        } catch (IOException ignored) {
+        }
+    }
+
+    public static void dump(Object data, Writer writer) {
+        if (data == null) {
+            return;
+        }
+        var classname = data.getClass()
+                            .toString();
+
+//        var yaml = cache.computeIfAbsent(classname, k -> buildYamlInstance(data.getClass()));
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);     // 使用块式格式
+        options.setPrettyFlow(true);          // 流式格式更美观（若启用流式）
+        options.setExplicitStart(false);
+        new Yaml(options).dump(data, writer);
+//        yaml.dump(data, writer);
     }
 }
